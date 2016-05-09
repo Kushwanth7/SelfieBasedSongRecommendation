@@ -66,9 +66,11 @@ def loadData():
 	valid_set_x,valid_set_y = shared_dataset([valid_set_x,valid_set_y])
 	test_set_x,test_set_y = shared_dataset([test_set_x,test_set_y])
 
-	print("Sharing complete")
-	print(type(train_set_x))
-	print(type(train_set_y))
+	train_set = [train_set_x,train_set_y]
+	valid_set = [valid_set_x,valid_set_y]
+	test_set = [test_set_x,test_set_y]
+	rval = [train_set, valid_set, test_set]
+	return rval
 
 
 if __name__ == "__main__":
