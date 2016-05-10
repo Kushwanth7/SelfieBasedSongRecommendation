@@ -6,25 +6,30 @@ import theano.tensor as T
 from theano.tensor.signal import downsample
 
 from hw3_nn import LogisticRegression, HiddenLayer, myMLP, LeNetConvPoolLayer, train_nn
-from dataLoad import loadData
+from dataLoad import loadData, shared_dataset
 import cPickle
+import matplotlib.pyplot as plt
+
 def loadModel(learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
         batch_size=200, verbose=True):
 
     rng = numpy.random.RandomState(23455)
-    datasets = loadData()
+    datasets = loadData(shared=False)
 
     train_set_x, train_set_y = datasets[0]
     valid_set_x, valid_set_y = datasets[1]
     test_set_x, test_set_y = datasets[2]
 
+    valid_set_x[0] = valid_set_x[5] # Save the image here
+
+
+
+    valid_set_x, valid_set_y = shared_dataset([valid_set_x, valid_set_y])
+
+
     # compute number of minibatches for training, validation and testing
-    n_train_batches = train_set_x.get_value(borrow=True).shape[0]
     n_valid_batches = valid_set_x.get_value(borrow=True).shape[0]
-    n_test_batches = test_set_x.get_value(borrow=True).shape[0]
-    n_train_batches //= batch_size
-    n_valid_batches //= batch_size
-    n_test_batches //= batch_size
+
 
     # allocate symbolic variables for the data
     index = T.lscalar()  # index to a [mini]batch
@@ -37,7 +42,6 @@ def loadModel(learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
     # BUILD ACTUAL MODEL #
     ######################
     #Make learning rate a theano shared variable 
-    print('... building the model')
 
     # Reshape matrix of rasterized images of shape (batch_size, 1 * 48 * 48)
     # to a 4D tensor, compatible with our LeNetConvPoolLayer
@@ -142,6 +146,12 @@ def loadModel(learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
     f.close()
     
 
-    predictedList = getPofYGivenX(1)
+    predictedList = getPofYGivenX(0)
+    predictedMoods = predictedList[0].tolist()
+    return [predictedMoods.index(max(predictedMoods)),max(predictedMoods)]
     
-    print("List of probabilities predicted = " + str(predictedList))
+
+
+if __name__ == "__main__":
+    print(loadModel())
+    

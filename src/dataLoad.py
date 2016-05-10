@@ -28,8 +28,8 @@ def shared_dataset(data_xy, borrow=True):
     # lets ous get around this issue
     return shared_x, T.cast(shared_y, 'int32')
 
-def loadData():
-	f = open('/home/ubuntu/extern/SelfieBasedSongRecommendation/data/fer2013.csv','r')
+def loadData(shared=True):
+	f = open('/home/ashashantharam/Desktop/Columbia/BigDataAnalytics/Project/data/fer2013.csv','r')
 	lines = f.read().split("\n")
 	train_set_x = numpy.empty((28709,2304))
 	valid_set_x = numpy.empty((3589,2304))
@@ -43,7 +43,6 @@ def loadData():
 	trainIndex = 0
 	testIndex = 0
 	validIndex = 0
-	print(len(lines))
 	for line in lines:
 		values = line.split(',')
 		arrX = numpy.fromstring(values[1],dtype=float,sep=' ')/255
@@ -62,9 +61,10 @@ def loadData():
 			testIndex = testIndex + 1
 
 	#Make sets as theano shared variables
-	train_set_x,train_set_y = shared_dataset([train_set_x,train_set_y])
-	valid_set_x,valid_set_y = shared_dataset([valid_set_x,valid_set_y])
-	test_set_x,test_set_y = shared_dataset([test_set_x,test_set_y])
+	if(shared):
+		train_set_x,train_set_y = shared_dataset([train_set_x,train_set_y])
+		valid_set_x,valid_set_y = shared_dataset([valid_set_x,valid_set_y])
+		test_set_x,test_set_y = shared_dataset([test_set_x,test_set_y])
 
 	train_set = [train_set_x,train_set_y]
 	valid_set = [valid_set_x,valid_set_y]
