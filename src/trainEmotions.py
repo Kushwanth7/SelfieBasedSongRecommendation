@@ -161,13 +161,12 @@ def test_emotionTraining(learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
             y: train_set_y[index * batch_size: (index + 1) * batch_size]
         }
     )
-    
     getPofYGivenX = theano.function(
         [index],
         layer4.pOfYGivenX(),
         givens={
-            x: valid_set_x[index : (index + 1)],
-            y: valid_set_y[index : (index + 1)]
+            x: valid_set_x[index * batch_size: (index + 1) * batch_size],
+            y: valid_set_y[index * batch_size: (index + 1) * batch_size]
         },
         on_unused_input='ignore'
     ) 
@@ -180,11 +179,38 @@ def test_emotionTraining(learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
     train_nn(train_model, validate_model, test_model,
         n_train_batches, n_valid_batches, n_test_batches, n_epochs, learning_rate, verbose)
     print('Training the model complete')
-
-    f = open('savedParameters','wb')
-    cPickle.dump(params, f, protocol=cPickle.HIGHEST_PROTOCOL)
-    f.close()
     
+
+    f1 = open('layer0.W', 'wb')
+    cPickle.dump(layer0.W.get_value(), f1, protocol=cPickle.HIGHEST_PROTOCOL)
+    f1.close()
+    f1 = open('layer0.b', 'wb')
+    cPickle.dump(layer0.b.get_value(), f1, protocol=cPickle.HIGHEST_PROTOCOL)
+    f1.close()
+    f1 = open('layer1.W', 'wb')
+    cPickle.dump(layer1.W.get_value(), f1, protocol=cPickle.HIGHEST_PROTOCOL)
+    f1.close()
+    f1 = open('layer1.b', 'wb')
+    cPickle.dump(layer1.b.get_value(), f1, protocol=cPickle.HIGHEST_PROTOCOL)
+    f1.close()
+    f1 = open('layer2.W', 'wb')
+    cPickle.dump(layer2.W.get_value(), f1, protocol=cPickle.HIGHEST_PROTOCOL)
+    f1.close()
+    f1 = open('layer2.b', 'wb')
+    cPickle.dump(layer2.b.get_value(), f1, protocol=cPickle.HIGHEST_PROTOCOL)
+    f1.close()
+    f1 = open('layer3.W', 'wb')
+    cPickle.dump(layer3.W.get_value(), f1, protocol=cPickle.HIGHEST_PROTOCOL)
+    f1.close()
+    f1 = open('layer3.b', 'wb')
+    cPickle.dump(layer3.b.get_value(), f1, protocol=cPickle.HIGHEST_PROTOCOL)
+    f1.close()    
+    f1 = open('layer4.W', 'wb')
+    cPickle.dump(layer4.W.get_value(), f1, protocol=cPickle.HIGHEST_PROTOCOL)
+    f1.close()
+    f1 = open('layer4.b', 'wb')
+    cPickle.dump(layer4.b.get_value(), f1, protocol=cPickle.HIGHEST_PROTOCOL)
+    f1.close()
 
     print("Saving the model complete")
     
@@ -193,5 +219,4 @@ def test_emotionTraining(learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
     print("List of probabilities predicted = " + str(predictedList))
 
 if __name__ == "__main__":
-	test_emotionTraining()
-	
+    test_emotionTraining()

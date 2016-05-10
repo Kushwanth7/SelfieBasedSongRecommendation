@@ -8,10 +8,11 @@ from theano.tensor.signal import downsample
 from hw3_nn import LogisticRegression, HiddenLayer, myMLP, LeNetConvPoolLayer, train_nn
 from dataLoad import loadData
 import cPickle
-def loadModel(image):
+def loadModel(learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
+        batch_size=200, verbose=True):
 
-	rng = numpy.random.RandomState(23455)
-	datasets = loadData()
+    rng = numpy.random.RandomState(23455)
+    datasets = loadData()
 
     train_set_x, train_set_y = datasets[0]
     valid_set_x, valid_set_y = datasets[1]
@@ -42,8 +43,6 @@ def loadModel(image):
     # to a 4D tensor, compatible with our LeNetConvPoolLayer
     layer0_input = x.reshape((batch_size, 1, 48, 48))
     
-    
-
     # TODO: Construct the first convolutional pooling layer:
     layer0 = LeNetConvPoolLayer(
         rng,
@@ -88,34 +87,60 @@ def loadModel(image):
     # classify the values of the fully-connected sigmoidal layer
     layer4 = LogisticRegression(input=layer3.output,
         n_in= batch_size,
-        n_out=7)	
+        n_out=7)
 
     
     getPofYGivenX = theano.function(
         [index],
         layer4.pOfYGivenX(),
         givens={
-            x: valid_set_x[index: (index + 1)],
-            y: valid_set_y[index: (index + 1)]
+            x: valid_set_x[index * batch_size: (index + 1) * batch_size],
+            y: valid_set_y[index * batch_size: (index + 1) * batch_size]
         },
         on_unused_input='ignore'
     )
 
     #Load the saved parameters
-    f = open('savedParameters','rb')
-	params = cPickle.load(f)     
+    f = open('layer0.W','rb')
+    layer0.W.set_value(cPickle.load(f))
     f.close()
-
-    layer0.W = params[0]
-    layer0.b = params[1]
-    layer1.W = params[2]
-    layer1.b= params[3]
-    layer2.W = params[4]
-    layer2.b = params[5]
-    layer3.W = params[6]
-    layer3.b = params[7]
-    layer4.W = params[8]
-    layer4.b = params[9]
+    
+    f = open('layer0.b','rb')
+    layer0.b.set_value(cPickle.load(f))     
+    f.close()
+    
+    f = open('layer1.W','rb')
+    layer1.W.set_value(cPickle.load(f))     
+    f.close()
+    
+    f = open('layer1.b','rb')
+    layer1.b.set_value(cPickle.load(f)) 
+    f.close()
+    
+    f = open('layer2.W','rb')
+    layer2.W.set_value(cPickle.load(f)) 
+    f.close()
+    
+    f = open('layer2.b','rb')
+    layer2.b.set_value(cPickle.load(f))
+    f.close()
+    
+    f = open('layer3.W','rb')
+    layer3.W.set_value(cPickle.load(f))
+    f.close()
+    
+    f = open('layer3.b','rb')
+    layer3.b.set_value(cPickle.load(f))
+    f.close()
+    
+    f = open('layer4.W','rb')
+    layer4.W.set_value(cPickle.load(f))
+    f.close()
+    
+    f = open('layer4.b','rb')
+    layer4.b.set_value(cPickle.load(f))
+    f.close()
+    
 
     predictedList = getPofYGivenX(1)
     
