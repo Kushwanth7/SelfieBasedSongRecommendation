@@ -7,6 +7,7 @@ from theano.tensor.signal import downsample
 
 from hw3_nn import LogisticRegression, HiddenLayer, myMLP, LeNetConvPoolLayer, train_nn
 from dataLoad import loadData
+import cPickle
 
 def test_emotionTraining(learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
         batch_size=200, verbose=True):
@@ -57,6 +58,8 @@ def test_emotionTraining(learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
     ######################
     # BUILD ACTUAL MODEL #
     ######################
+    #Make learning rate a theano shared variable 
+    learning_rate = theano.shared(learning_rate)
     print('... building the model')
 
     # Reshape matrix of rasterized images of shape (batch_size, 1 * 48 * 48)
@@ -145,7 +148,7 @@ def test_emotionTraining(learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
     # create the updates list by automatically looping over all
     # (params[i], grads[i]) pairs.
     updates = [
-        (param_i, param_i - learning_rate * grad_i)
+        (param_i, param_i - learning_rate.get_value().item() * grad_i)
         for param_i, grad_i in zip(params, grads)
     ]
 
@@ -158,6 +161,15 @@ def test_emotionTraining(learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
             y: train_set_y[index * batch_size: (index + 1) * batch_size]
         }
     )
+    
+    getPofYGivenX = theano.function(
+        [index],
+        layer4.pOfYGivenX(y),
+        givens={
+            x: valid_set_x[index * batch_size: (index + 1) * batch_size],
+            y: valid_set_y[index * batch_size: (index + 1) * batch_size]
+        }
+    ) 
 
     ###############
     # TRAIN MODEL #
@@ -165,9 +177,34 @@ def test_emotionTraining(learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
     print('... training')
 
     train_nn(train_model, validate_model, test_model,
-        n_train_batches, n_valid_batches, n_test_batches, n_epochs, verbose)
+        n_train_batches, n_valid_batches, n_test_batches, n_epochs, learning_rate, verbose)
     print('Training the model complete')
+    
+    f1 = open('layer0', 'wb')
+    cPickle.dump(layer0, f1, protocol=cPickle.HIGHEST_PROTOCOL)
+    f1.close()
+    
+    f1 = open('layer1', 'wb')
+    cPickle.dump(layer1, f1, protocol=cPickle.HIGHEST_PROTOCOL)
+    f1.close()
+    
+    f1 = open('layer2', 'wb')
+    cPickle.dump(layer2, f1, protocol=cPickle.HIGHEST_PROTOCOL)
+    f1.close()
 
+    f1 = open('layer3', 'wb')
+    cPickle.dump(layer3, f1, protocol=cPickle.HIGHEST_PROTOCOL)
+    f1.close()
+
+    f1 = open('layer4', 'wb')
+    cPickle.dump(layer4, f1, protocol=cPickle.HIGHEST_PROTOCOL)
+    f1.close()
+
+    print("Saving the model complete")
+    
+    predictedList = getPofYGivenX(1)
+    
+    print("List of probabilities predicted = " + str(predictedList))
 
 if __name__ == "__main__":
 	test_emotionTraining()

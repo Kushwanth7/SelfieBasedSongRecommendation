@@ -431,7 +431,7 @@ class LeNetConvPoolLayer(object):
         self.input = input
 
 def train_nn(train_model, validate_model, test_model,
-            n_train_batches, n_valid_batches, n_test_batches, n_epochs,
+            n_train_batches, n_valid_batches, n_test_batches, n_epochs,learning_rate,
             verbose = True):
     """
     Wrapper function for training and test THEANO model
@@ -481,6 +481,8 @@ def train_nn(train_model, validate_model, test_model,
 
     epoch = 0
     done_looping = False
+    print("validation_frequency = " + str(validation_frequency))
+    changeEpochCount = 0
 
     while (epoch < n_epochs) and (not done_looping):
         epoch = epoch + 1
@@ -531,11 +533,21 @@ def train_nn(train_model, validate_model, test_model,
                               (epoch, minibatch_index + 1,
                                n_train_batches,
                                test_score * 100.))
+                else:
+                    changeEpochCount = changeEpochCount + 1
+                    if(changeEpochCount == 10):
+                        changeEpochCount = 0
+                        presentLearningRate = learning_rate.get_value()
+                        presentLearningRate = presentLearningRate * 0.5
+                        print("Validation error not improved for 10 epochs, changing the learning rate to " + str(presentLearningRate.item()))
+                        learning_rate.set_value(presentLearningRate)
 
             if patience <= iter:
                 done_looping = True
                 break
-
+            if (learning_rate.get_value().item() < 1e-5):
+                done_looping = True
+                break
     end_time = timeit.default_timer()
 
     # Retrieve the name of function who invokes train_nn() (caller's name)
