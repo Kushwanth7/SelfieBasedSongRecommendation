@@ -166,8 +166,8 @@ def test_emotionTraining(learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
         [index],
         layer4.pOfYGivenX(),
         givens={
-            x: valid_set_x[index * batch_size: (index + 1) * batch_size],
-            y: valid_set_y[index * batch_size: (index + 1) * batch_size]
+            x: valid_set_x[index : (index + 1)],
+            y: valid_set_y[index : (index + 1)]
         },
         on_unused_input='ignore'
     ) 
@@ -180,26 +180,11 @@ def test_emotionTraining(learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
     train_nn(train_model, validate_model, test_model,
         n_train_batches, n_valid_batches, n_test_batches, n_epochs, learning_rate, verbose)
     print('Training the model complete')
-    
-    f1 = open('layer0', 'wb')
-    cPickle.dump(layer0, f1, protocol=cPickle.HIGHEST_PROTOCOL)
-    f1.close()
-    
-    f1 = open('layer1', 'wb')
-    cPickle.dump(layer1, f1, protocol=cPickle.HIGHEST_PROTOCOL)
-    f1.close()
-    
-    f1 = open('layer2', 'wb')
-    cPickle.dump(layer2, f1, protocol=cPickle.HIGHEST_PROTOCOL)
-    f1.close()
 
-    f1 = open('layer3', 'wb')
-    cPickle.dump(layer3, f1, protocol=cPickle.HIGHEST_PROTOCOL)
-    f1.close()
-
-    f1 = open('layer4', 'wb')
-    cPickle.dump(layer4, f1, protocol=cPickle.HIGHEST_PROTOCOL)
-    f1.close()
+    f = open('savedParameters','wb')
+    cPickle.dump(params, f, protocol=cPickle.HIGHEST_PROTOCOL)
+    f.close()
+    
 
     print("Saving the model complete")
     
