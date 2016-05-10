@@ -29,7 +29,7 @@ def shared_dataset(data_xy, borrow=True):
     return shared_x, T.cast(shared_y, 'int32')
 
 def loadData():
-	f = open('/home/ashashantharam/Desktop/Columbia/BigDataAnalytics/Project/data/fer2013.csv','r')
+	f = open('/home/ubuntu/extern/SelfieBasedSongRecommendation/data/fer2013.csv','r')
 	lines = f.read().split("\n")
 	train_set_x = numpy.empty((28709,2304))
 	valid_set_x = numpy.empty((3589,2304))
