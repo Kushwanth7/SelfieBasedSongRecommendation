@@ -164,11 +164,12 @@ def test_emotionTraining(learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
     
     getPofYGivenX = theano.function(
         [index],
-        layer4.pOfYGivenX(y),
+        layer4.pOfYGivenX(),
         givens={
             x: valid_set_x[index * batch_size: (index + 1) * batch_size],
             y: valid_set_y[index * batch_size: (index + 1) * batch_size]
-        }
+        },
+        on_unused_input='ignore'
     ) 
 
     ###############
