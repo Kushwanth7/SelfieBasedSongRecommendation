@@ -10,7 +10,7 @@ from dataLoad import loadData, shared_dataset
 import cPickle
 import matplotlib.pyplot as plt
 
-def loadModel(learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
+def loadModel(imageArray,learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
         batch_size=200, verbose=True):
 
     rng = numpy.random.RandomState(23455)
@@ -20,7 +20,7 @@ def loadModel(learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
     valid_set_x, valid_set_y = datasets[1]
     test_set_x, test_set_y = datasets[2]
 
-    valid_set_x[0] = valid_set_x[5] # Save the image here
+    valid_set_x[0] = imageArray 
 
 
 
