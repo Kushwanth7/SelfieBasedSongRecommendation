@@ -1,0 +1,82 @@
+<html ng-app="selfieApp">
+    <head>
+        <title>Selfie Based Recommendation</title>
+        <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    </head>
+
+<body>
+<h2> We recommend music based on your mood</h2>
+<div id="promoNode"></div>
+	
+	<div ng-controller="selfieController">
+		<video id="video" width="160" height="120" autoplay></video>
+		<button ng-click='snap()' class= "btn btn-danger">Snap Photo</button>
+		<canvas id="canvas" width="48" height="48"></canvas>
+	</div>
+
+	<script>
+
+		var context, video, canvas;
+		// Put event listeners into place
+		window.addEventListener("DOMContentLoaded", function() {
+			// Grab elements, create settings, etc.
+			var videoObj = { "video": true },
+				errBack = function(error) {
+					console.log("Video capture error: ", error.code); 
+				};
+
+			canvas = document.getElementById("canvas");
+			context = canvas.getContext("2d");
+			video = document.getElementById("video");
+			// Put video listeners into place
+			if(navigator.getUserMedia) { // Standard
+				navigator.getUserMedia(videoObj, function(stream) {
+					video.src = stream;
+					video.play();
+				}, errBack);
+			} else if(navigator.webkitGetUserMedia) { // WebKit-prefixed
+				navigator.webkitGetUserMedia(videoObj, function(stream){
+					video.src = window.webkitURL.createObjectURL(stream);
+					video.play();
+				}, errBack);
+			} else if(navigator.mozGetUserMedia) { // WebKit-prefixed
+				navigator.mozGetUserMedia(videoObj, function(stream){
+					video.src = window.URL.createObjectURL(stream);
+					video.play();
+				}, errBack);
+			}
+		}, false);
+
+		var app = angular.module('selfieApp', []);
+
+		app.controller('selfieController', function($scope, $http) {
+			$scope.snap = function() {
+				console.log("Testing Selfie");
+				context.drawImage(video, 0, 0, 48, 48);
+				console.log(canvas.toDataURL());
+
+				$http({
+			        method: 'POST',
+			        url: '/pic',
+			        data: {data: canvas.toDataURL()},
+			        transformResponse: function (data, headersGetter, status) {
+			            return {data: data};
+			        }
+			    }).success(function (response, status) {
+			        var data = JSON.parse(response.data);
+			        console.log(data);
+			    }).error(function () {
+			        console.log('failure');
+			    });
+			};
+		});
+
+	</script>
+		
+</div>
+</body>
+</html>

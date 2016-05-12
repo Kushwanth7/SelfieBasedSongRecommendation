@@ -2,7 +2,7 @@
 from PIL import Image
 import numpy
 from loadModel import loadModel
-def predict(imageLocation="/home/ashashantharam/Desktop/sharan.png"):
+def predict(imageLocation="pic.png"):
 
 	im = Image.open(imageLocation).convert("L")
 	numpyArray = numpy.array(im)
