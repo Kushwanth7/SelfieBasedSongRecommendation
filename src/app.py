@@ -7,7 +7,7 @@ from PIL import Image
 import os
 from loadModel import loadModel
 import numpy
-
+from boto3.dynamodb.conditions import Key,Attr
 import theano
 import theano.tensor as T
 from theano.tensor.signal import downsample
@@ -150,23 +150,24 @@ def index():
 
 @app.route("/pic",methods=['POST'])
 def picture():
-	modes = ['Angry','Disgust','Fear','Happy','Sad','Surprise','Neutral', 'Could not Predict emotion']
-	modeId = 7
-	if(request.method== 'POST'):
-		content = request.get_json()["data"]
-		data = content.split(',')[1].decode("base64")
-		file1=open('pic.png','wb')
-		file1.write(data)
-		file1.close()
-		img = Image.open('pic.png').convert('L')
-		numpyArray = numpy.array(img)
-		backupValidX[0] = numpyArray.flatten()
-		valid_set_x.set_value(backupValidX)
-		predictedList = getPofYGivenX(0)
-		predictedMoods = predictedList[0].tolist()
+    modes = ['Angry','Disgust','Fear','Happy','Sad','Surprise','Neutral', 'Neutral']
+    modeId = 7
+    if(request.method== 'POST'):
+        content = request.get_json()["data"]
+    	data = content.split(',')[1].decode("base64")
+    	file1=open('pic.png','wb')
+    	file1.write(data)
+    	file1.close()
+    	img = Image.open('pic.png').convert('L')
+    	numpyArray = numpy.array(img)
+    	backupValidX[0] = numpyArray.flatten()
+    	valid_set_x.set_value(backupValidX)
+    	predictedList = getPofYGivenX(0)
+    	predictedMoods = predictedList[0].tolist()
     	returnList = [predictedMoods.index(max(predictedMoods)),max(predictedMoods)]
         os.remove('pic.png')
-        mood = returnList[0]
+        mood = modes[returnList[0]]
+	print ("Mood = " + str(mood))
 	dynamodb = boto3.resource('dynamodb')
 	table = dynamodb.Table('songs')
 	response = table.scan(
@@ -179,7 +180,7 @@ def picture():
 	res['url']=item[num]['url']
 	res['song']=item[num]['song']
 	res['artist']=item[num]['artist']
-	return str(json.dumps(res))
+        return str(json.dumps(res))
 
 if __name__ == "__main__":
-	 app.run()
+    app.run()
