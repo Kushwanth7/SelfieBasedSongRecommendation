@@ -9,10 +9,10 @@
     </head>
 
 <body>
-<h2> We recommend music based on your mood</h2>
+<h2 align="center"> Mood based Song Recommendation</h2>
 <div id="promoNode"></div>
 	
-	<div ng-controller="selfieController">
+	<div ng-controller="selfieController" style = "position: absolute; top: 25%; left: 45%; margin-top: -50px; margin-left: -50px; width: 100px; height: 100px;">
 		<video id="video" width="160" height="120" autoplay></video>
 		<button ng-click='snap()' class= "btn btn-danger">Snap Photo</button>
 		<canvas id="canvas" width="48" height="48"></canvas>
