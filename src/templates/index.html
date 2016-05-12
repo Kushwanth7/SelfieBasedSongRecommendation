@@ -8,7 +8,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
     </head>
 
-<body>
+<body bgcolor="">
 <div align="center">
 	<h1><em> Song Recommendation based on mood predicted from Selfie</em></h1>
 </div>
@@ -26,7 +26,7 @@
 			<h3> Your photo</h3>
 			<canvas id="canvas2" width="320" height="240"></canvas>
 		</div>
-		<p><h3>Mood Predicted <span ng-bind="mood"></span></h3></p>
+		<p><h3>Mood Predicted - <span ng-bind="mood"></span></h3></p>
 		<div align="center"> <h2 > Songs recommended</span></h2></div>
 		<div style="position: absolute; top: 90%;; margin-top:100px">
 			<div style="float:left; ">
@@ -92,8 +92,9 @@
 
 		app.controller('selfieController', function($scope, $http) {
 			$scope.mood = "Neutral";
-			$scope.song= "Sample";
-			var videourl='http://www.youtube.com/embed/XGSy3_Czz8k?autoplay=1';
+			$scope.song= "SkyFall";
+			$scope.artist= "Adele";
+			var videourl='http://www.youtube.com/embed/DeumyOzKqgI?autoplay=1';
 			$('#myiframe').attr('src', videourl);
 			$scope.snap = function() {
 				console.log("Testing Selfie");
