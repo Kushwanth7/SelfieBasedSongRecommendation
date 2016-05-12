@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 import json
+import boto3
+import random
 import base64
 from PIL import Image
 import os
@@ -142,12 +144,9 @@ layer4.b.set_value(cPickle.load(f))
 f.close()
 
 
-
 @app.route('/')
 def index():
-	print("Model load complete")
 	return render_template('index.html')
-
 
 @app.route("/pic",methods=['POST'])
 def picture():
@@ -167,11 +166,20 @@ def picture():
 		predictedMoods = predictedList[0].tolist()
     	returnList = [predictedMoods.index(max(predictedMoods)),max(predictedMoods)]
         os.remove('pic.png')
-        modeId = returnList[0]
+        mood = returnList[0]
+	dynamodb = boto3.resource('dynamodb')
+	table = dynamodb.Table('songs')
+	response = table.scan(
+    	FilterExpression=Attr('type').eq(mood)
+	)
+	item = response['Items']
+	num= random.randrange(0,len(item))
+	res={}
+	res['mood']=mood
+	res['url']=item[num]['url']
+	res['song']=item[num]['song']
+	res['artist']=item[num]['artist']
+	return str(json.dumps(res))
 
-	return str(json.dumps(modes[modeId]))
-
-def save():
-	return render_template('index2.html')
 if __name__ == "__main__":
 	 app.run()
