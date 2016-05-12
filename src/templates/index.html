@@ -9,14 +9,45 @@
     </head>
 
 <body>
-<h2 align="center"> Mood based Song Recommendation</h2>
+<div align="center">
+	<h1><em> We recommend music based on your mood</em></h1>
+</div>
 <div id="promoNode"></div>
 	
-	<div ng-controller="selfieController" style = "position: absolute; top: 25%; left: 45%; margin-top: -50px; margin-left: -50px; width: 100px; height: 100px;">
-		<video id="video" width="160" height="120" autoplay></video>
-		<button ng-click='snap()' class= "btn btn-danger">Snap Photo</button>
-		<canvas id="canvas" width="48" height="48"></canvas>
+	<div ng-controller="selfieController" ng-init="mood='Neutral'" style = "position: absolute; top: 25%; left: 15%; margin-top: -50px; margin-left: -50px;">
+
+		<div style="float:left; margin-right:5px; margin-top:55px";>
+			<video id="video" width="320" height="240" autoplay></video>
+		</div>
+		<div style="position: absolute; top: 40%; left: 45%;float:bottom; margin-top:50px">
+			<button ng-click='snap()' class= "btn btn-danger">Snap Photo</button>
+		</div>	
+		<div style="float:right; left:75%;margin-left:200px">
+			<h3> Your photo</h3>
+			<canvas id="canvas2" width="320" height="240"></canvas>
+		</div>
+		<p><h3>Your mood <span ng-bind="mood"></span></h3></p>
+		<div align="center"> <h2 > Songs recommended for your mood</span></h2></div>
+		<div style="position: absolute; top: 90%;; margin-top:100px">
+			<div style="float:left; ">
+				<p>
+					<h1> <b>Song details </b></h2>
+					<h2> Song name: <span ng-bind="song"></span></h2>
+					<h2> Artist/Band: <span ng-bind="artist"></span></h2>
+
+				</p>
+				</div>
+				<div style="float:right;" align="right">
+					<iframe width="320" height="215" id="myiframe"></iframe>
+				</div>
+			</div>
+		</div>
 	</div>
+
+	
+
+
+
 
 	<script>
 
@@ -29,8 +60,12 @@
 					console.log("Video capture error: ", error.code); 
 				};
 
-			canvas = document.getElementById("canvas");
+			canvas = document.createElement("canvas");
+			canvas2 = document.getElementById("canvas2")
+			canvas.width=48;
+			canvas.height=48;
 			context = canvas.getContext("2d");
+			context2 = canvas2.getContext("2d");
 			video = document.getElementById("video");
 			// Put video listeners into place
 			if(navigator.getUserMedia) { // Standard
@@ -51,14 +86,20 @@
 			}
 		}, false);
 
+
+
 		var app = angular.module('selfieApp', []);
 
 		app.controller('selfieController', function($scope, $http) {
+			$scope.mood = "Neutral";
+			$scope.song= "Sample";
+			var videourl='http://www.youtube.com/embed/XGSy3_Czz8k?autoplay=1';
+			$('#myiframe').attr('src', videourl);
 			$scope.snap = function() {
 				console.log("Testing Selfie");
-				context.drawImage(video, 0, 0, 48, 48);
+				context2.drawImage(video, 0, 0, 320, 240);
+				context.drawImage(video,0,0,48,48);
 				console.log(canvas.toDataURL());
-
 				$http({
 			        method: 'POST',
 			        url: '/pic',
@@ -68,6 +109,11 @@
 			        }
 			    }).success(function (response, status) {
 			        var data = JSON.parse(response.data);
+			        videourl = data.url;
+			        $scope.mood = data.mood;
+			        $scope.artist=data.artist;
+			        $scope.song=data.song;
+			        $('#myiframe').attr('src', videourl);
 			        console.log(data);
 			    }).error(function () {
 			        console.log('failure');
