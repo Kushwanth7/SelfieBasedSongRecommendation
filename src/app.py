@@ -5,11 +5,15 @@ from PIL import Image
 import os
 from loadModel import loadModel
 import numpy
+from dataLoad import loadData, shared_dataset
 app = Flask(__name__)
 
+datasets = loadData(shared=False)
+validSets = datasets[1]
 @app.route('/')
 def index():
 	return render_template('index.html')
+
 
 @app.route("/pic",methods=['POST'])
 def picture():
@@ -23,7 +27,7 @@ def picture():
 		file1.close()
 		img = Image.open('pic.png').convert('L')
 		numpyArray = numpy.array(img)
-		returnList = loadModel(imageArray = numpyArray.flatten())
+		returnList = loadModel(imageArray = numpyArray.flatten(), validSet = validSets)
 		os.remove('pic.png')
 		modeId = returnList[0]
 

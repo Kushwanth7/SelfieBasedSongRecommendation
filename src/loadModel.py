@@ -10,15 +10,15 @@ from dataLoad import loadData, shared_dataset
 import cPickle
 import matplotlib.pyplot as plt
 
-def loadModel(imageArray,learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
+def loadModel(imageArray,validSet, learning_rate=0.1, n_epochs=1000, nkerns=[16, 512, 20],
         batch_size=200, verbose=True):
 
     rng = numpy.random.RandomState(23455)
-    datasets = loadData(shared=False)
+    #datasets = loadData(shared=False)
 
-    train_set_x, train_set_y = datasets[0]
-    valid_set_x, valid_set_y = datasets[1]
-    test_set_x, test_set_y = datasets[2]
+    #train_set_x, train_set_y = datasets[0]
+    valid_set_x, valid_set_y = validSet
+    #test_set_x, test_set_y = datasets[2]
 
     valid_set_x[0] = imageArray 
 
