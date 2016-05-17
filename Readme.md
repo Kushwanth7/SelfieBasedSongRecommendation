@@ -21,3 +21,15 @@ To run the web server install Python Flask on your system and the run the app.py
 
 Thus the user can implement our project by cloning our repository and creating a DynamoDB with the song information and running our code. If they do not want to make use of DynamoDB, then they will have to tweak the code to suit their needs.
 
+
+##Data
+We have obtained the dataset of around 40000 pre-classified images from Kaggle's Learn facial expressions from an image. Each of these images were classified as to belonging to one of Angry, Disgust, Fear, Happy, Sad, Surprise or Neutral emotional categories. 3589 images from the same dataset was used as test dataset and another 3589 images was used as part of the validation set during training. Each of the images in the dataset were 48 * 48 grey scale images. 
+
+[Kaggle's learn Facial Expression dataset] (https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge)
+
+##Tools
+1. Theano
+2. Python Flask
+3. AngularJS
+4. Amazon DynamoDB
+5. YouTube API
